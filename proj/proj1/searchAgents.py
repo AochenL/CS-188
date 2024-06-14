@@ -292,6 +292,8 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self.startState = (self.startingPosition, self.corners)
+        self.costFn = lambda x: 1
 
     def getStartState(self):
         """
@@ -299,14 +301,14 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.startState
 
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return state[1] == () # all corners have been visited
 
     def getSuccessors(self, state: Any):
         """
@@ -327,10 +329,17 @@ class CornersProblem(search.SearchProblem):
             #   dx, dy = Actions.directionToVector(action)
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
-
             "*** YOUR CODE HERE ***"
-
-        self._expanded += 1 # DO NOT CHANGE
+            x,y = state[0]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if not self.walls[nextx][nexty]:
+                cornerList = state[1]
+                newCornerList = tuple(item for item in cornerList if item != (nextx, nexty))
+                nextState = ((nextx, nexty),newCornerList)
+                cost = self.costFn(nextState)
+                successors.append((nextState, action, cost))
+        self._expanded += 1 
         return successors
 
     def getCostOfActions(self, actions):
@@ -364,7 +373,33 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    #self.startState = (self.startingPosition, self.corners)
+    xy0 = state[0] #current position
+    hDistance = float('inf')
+    hNodes = 0
+    for xy in state[1]:
+        #hDistance += abs(xy[0] - xy0[0]) + abs(xy[1] - xy0[1]) # neither consistant nor admissable
+        #hDistance += 1 # consitant but expand too many nodes
+        hDistance = min(hDistance, abs(xy[0] - xy0[0]) + abs(xy[1] - xy0[1]))
+        hNodes += 1
+
+    # self.corners = ((1,1), (1,top), (right, 1), (right, top))
+    top = 0
+    right = 0
+    for (x, y) in corners:
+        right = max(right, x)
+        top = max(top, y)
+    d1 = top - 1
+    d2 = right - 1
+
+    if hNodes == 4:
+        hDistance += 2*d1 + d2
+    elif hNodes == 3:
+        hDistance += d1 + d2
+    elif hNodes == 2:
+        hDistance += d1
+
+    return hDistance if hNodes else 0 
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
