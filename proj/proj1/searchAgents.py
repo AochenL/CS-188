@@ -376,12 +376,11 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     #self.startState = (self.startingPosition, self.corners)
     xy0 = state[0] #current position
     hDistance = float('inf')
-    hNodes = 0
+    hNodes = len(state[1])
     for xy in state[1]:
         #hDistance += abs(xy[0] - xy0[0]) + abs(xy[1] - xy0[1]) # neither consistant nor admissable
         #hDistance += 1 # consitant but expand too many nodes
         hDistance = min(hDistance, abs(xy[0] - xy0[0]) + abs(xy[1] - xy0[1]))
-        hNodes += 1
 
     # self.corners = ((1,1), (1,top), (right, 1), (right, top))
     top = 0
@@ -397,8 +396,8 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     elif hNodes == 3:
         hDistance += d1 + d2
     elif hNodes == 2:
-        hDistance += d1
-
+        hDistance += d1      
+ 
     return hDistance if hNodes else 0 
 
 class AStarCornersAgent(SearchAgent):
@@ -493,7 +492,60 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    foodPositions = foodGrid.asList()
+    
+    if not foodPositions:
+        return 0
+
+    # Compute the distance from the current position to the closest food
+    closest_food_distance = min(distance(position, food) for food in foodPositions)
+    
+    # Compute the MST weight of the food positions
+    mst_cost = mst_weight(foodPositions)
+
+    # The heuristic is the sum of the closest food distance and the MST cost
+    return mst_cost + closest_food_distance
+    
+def distance(p1, p2):
+    """
+    Compute the distance between p1 and p2
+    """
+    return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+
+def mst_weight(foodPositions):
+    """
+    Helper function of foodHeuristic
+    Compute the weight of the MST using Prim's algorithm.
+    """
+    if len(foodPositions) <= 1:
+        return 0
+
+    # Priority queue for the edges
+    from util import PriorityQueue
+    pq = PriorityQueue()
+    start = foodPositions[0]
+    #print(start)
+    totalWeight = 0
+    visited = set([start])
+
+    for pos in foodPositions:
+        if pos != start:
+            weight = distance(start, pos)
+            pq.push(((start, pos), weight), weight)
+    
+    while pq and len(visited) < len(foodPositions):
+        #print(pq.pop())
+        (_, v), w =  pq.pop()
+        if v not in visited:
+            visited.add(v)
+            totalWeight += w
+            for pos in foodPositions:
+                if pos not in visited:
+                    weight = distance(v, pos)
+                    pq.push(((v, pos), weight), weight)
+
+    return totalWeight
+
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -524,7 +576,12 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if (food.count() == 0):
+            return []
+
+        from search import breadthFirstSearch
+        return breadthFirstSearch(problem)
+
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -558,9 +615,11 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x,y = state
-
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        foodPositions = self.food.asList()
+        #print(foodPositions)
+        return True if (x, y) in foodPositions else False
 
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
     """

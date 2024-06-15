@@ -129,8 +129,7 @@ def breadthFirstSearch(problem: SearchProblem):
                 return actions
         
         if currentState not in explored:
-            explored.add(currentState)
-            
+            explored.add(currentState)           
             
             for successor, action, stepCost in problem.getSuccessors(currentState):
                 if successor not in explored:
@@ -146,7 +145,7 @@ def uniformCostSearch(problem: SearchProblem):
     frontier = PriorityQueue()
     startState = problem.getStartState()
     cost = 0
-    frontier.push((startState, [], cost), cost)  # PriorityQueue stores tuples of (state, path_to_state), cost)
+    frontier.push((startState, [], cost), cost)  # PriorityQueue stores tuples of (state, path_to_state, cost)
     
     explored = set()
     
@@ -182,12 +181,10 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     from util import PriorityQueue
     frontier = PriorityQueue()
     startState = problem.getStartState()
-    # from searchAgents import manhattanHeuristic
-    # heuristic = manhattanHeuristic
     gCost = 0
     hCost = heuristic(startState, problem)
     fCost = gCost + hCost
-    frontier.push((startState, [], gCost), fCost)  # PriorityQueue stores tuples of (state, path_to_state), cost)
+    frontier.push((startState, [], gCost), fCost)  # PriorityQueue stores tuples of (state, path_to_state, gCost)
     
     explored = set()
     
