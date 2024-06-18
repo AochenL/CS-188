@@ -1,0 +1,20 @@
+Starting on 6-18 at 16:45:23
+agentIndex: 0
+depth: 0
+movedTimes:  0
+agentIndex: 1
+depth: 0
+movedTimes:  1
+agentIndex: 0
+depth: 1
+movedTimes:  2
+agentIndex: 0
+depth: 1
+movedTimes:  2
+agentIndex: 1
+depth: 0
+movedTimes:  1
+agentIndex: 0
+depth: 1
+movedTimes:  2
+*** PASS: test_cases/q2/2-1a-vary-depth.test
