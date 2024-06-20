@@ -232,7 +232,87 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        alpha = float('-inf') 
+        beta = float('inf') 
+        bestScore, bestAction = self.minimax(gameState, 0, 0, 0, alpha, beta)
+        return bestAction
+
+    def minimax(self, gameState, depth, agentIndex, movedTimes, alpha, beta):
+        #check if the state is win/lose or reach maxDepth
+        #print("Using minimax function...")
+        #print("alpha: ", alpha)
+        #print("beta: ", beta)
+        
+        if depth == self.depth and movedTimes % gameState.getNumAgents() == 0:
+            eval = self.evaluationFunction(gameState)
+            #print("evaluated to: ", eval)
+            return eval, None
+        if gameState.isWin() or gameState.isLose():
+            eval = self.evaluationFunction(gameState)
+            #print("evaluated to: ", eval)
+            return eval, None
+        
+    
+        if agentIndex:
+            return self.minValue(gameState, depth, agentIndex, movedTimes, alpha, beta)
+        else:
+            return self.maxValue(gameState, depth, agentIndex, movedTimes, alpha, beta)
+        
+
+    def maxValue(self, gameState, depth, agentIndex, movedTimes, alpha, beta):
+        #print("Using maxValue function...")
+        #print("alpha: ", alpha)
+        #print("beta: ", beta)
+        maxScore = float('-inf')
+        maxAction = None
+        
+        movedTimes += 1
+        nextAgent = (agentIndex + 1) % gameState.getNumAgents()
+        nextDepth = depth 
+        if movedTimes % gameState.getNumAgents() == 0:
+            nextDepth += 1
+
+        for action in gameState.getLegalActions(agentIndex):
+            successor = gameState.generateSuccessor(agentIndex, action)
+            
+            score, _ = self.minimax(successor, nextDepth, nextAgent, movedTimes, alpha, beta)
+            if score > maxScore:
+                maxScore = score
+                maxAction = action
+            if maxScore > beta:
+                #print("Break because of beta pruning...")
+                break
+            alpha = max(alpha, maxScore)
+        return maxScore, maxAction        
+        
+
+    def minValue(self, gameState, depth, agentIndex, movedTimes, alpha, beta):
+        #print("Using minValue function...")
+        #print("alpha: ", alpha)
+        #print("beta: ", beta)
+        minScore = float('inf')
+        minAction = None
+
+        movedTimes += 1
+        nextAgent = (agentIndex + 1) % gameState.getNumAgents()
+        nextDepth = depth 
+        if movedTimes % gameState.getNumAgents() == 0:
+            nextDepth += 1
+
+
+
+        for action in gameState.getLegalActions(agentIndex):
+            successor = gameState.generateSuccessor(agentIndex, action)
+            
+            score, _ = self.minimax(successor, nextDepth, nextAgent, movedTimes, alpha, beta)
+            if score < minScore:
+                minScore = score
+                minAction = action
+            if minScore < alpha:
+                #print("Break because of alpha pruning...")
+                break
+            beta = min(beta, minScore)
+        return minScore, minAction 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
@@ -247,7 +327,63 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        bestScore, bestAction = self.expectimax(gameState, 0, 0, 0)
+        return bestAction
+
+    def expectimax(self, gameState, depth, agentIndex, movedTimes):
+        #check if the state is win/lose or reach maxDepth
+        if depth == self.depth and movedTimes % gameState.getNumAgents() == 0:
+            return self.evaluationFunction(gameState), None
+        if gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState), None
+        
+    
+        if agentIndex:
+            return self.expectiValue(gameState, depth, agentIndex, movedTimes)
+        else:
+            return self.maxValue(gameState, depth, agentIndex, movedTimes)
+        
+
+    def maxValue(self, gameState, depth, agentIndex, movedTimes):
+        maxScore = float('-inf')
+        maxAction = None
+        
+        movedTimes += 1
+        nextAgent = (agentIndex + 1) % gameState.getNumAgents()
+        nextDepth = depth 
+        if movedTimes % gameState.getNumAgents() == 0:
+            nextDepth += 1
+
+        for action in gameState.getLegalActions(agentIndex):
+            successor = gameState.generateSuccessor(agentIndex, action)
+            
+            score, _ = self.expectimax(successor, nextDepth, nextAgent, movedTimes)
+            if score > maxScore:
+                maxScore = score
+                maxAction = action
+        return maxScore, maxAction        
+        
+
+    def expectiValue(self, gameState, depth, agentIndex, movedTimes):
+        expectiScore = 0
+        expectiAction = None
+        actionNum = 0
+
+        movedTimes += 1
+        nextAgent = (agentIndex + 1) % gameState.getNumAgents()
+        nextDepth = depth 
+        if movedTimes % gameState.getNumAgents() == 0:
+            nextDepth += 1
+
+        for action in gameState.getLegalActions(agentIndex):
+            successor = gameState.generateSuccessor(agentIndex, action)
+            score, _ = self.expectimax(successor, nextDepth, nextAgent, movedTimes)
+            expectiScore += score
+            actionNum += 1
+        
+        expectiScore /= actionNum
+                
+        return expectiScore, expectiAction 
 
 def betterEvaluationFunction(currentGameState: GameState):
     """
