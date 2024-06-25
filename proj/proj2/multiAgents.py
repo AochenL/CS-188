@@ -393,7 +393,33 @@ def betterEvaluationFunction(currentGameState: GameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    pos = currentGameState.getPacmanPosition()
+    ghostStates = currentGameState.getGhostStates()
+    food = currentGameState.getFood()
+    score = currentGameState.getScore()
+
+    # Avoid ghosts: heavily penalize positions close to ghosts unless they are scared
+    for ghostState in ghostStates:
+        ghostPos = ghostState.getPosition()
+        distanceToGhost = manhattanDistance(pos, ghostPos)
+        if ghostState.scaredTimer > 0:
+            # Encourage chasing scared ghosts
+            score += max(10 - distanceToGhost, 0)
+        else:
+            # Penalize being close to active ghosts
+            if distanceToGhost < 2:
+                score -= 100
+    
+    # Prioritize eating food: incentivize positions closer to food
+    foodList = food.asList()
+    if foodList:
+        closestFoodDistance = min([manhattanDistance(pos, food) for food in foodList])
+        score += 10 / closestFoodDistance
+
+    return score
+
+
+    
 
 # Abbreviation
 better = betterEvaluationFunction
