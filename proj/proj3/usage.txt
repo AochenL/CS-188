@@ -1,0 +1,45 @@
+Usage: gridworld.py [options]
+
+Options:
+  -h, --help            show this help message and exit
+  -d DISCOUNT, --discount=DISCOUNT
+                        Discount on future (default 0.9)
+  -r R, --livingReward=R
+                        Reward for living for a time step (default 0.0)
+  -n P, --noise=P       How often action results in unintended direction
+                        (default 0.2)
+  -e E, --epsilon=E     Chance of taking a random action in q-learning
+                        (default 0.3)
+  -l P, --learningRate=P
+                        TD learning rate (default 0.5)
+  -i K, --iterations=K  Number of rounds of value iteration (default 10)
+  -k K, --episodes=K    Number of epsiodes of the MDP to run (default 1)
+  -g G, --grid=G        Grid to use (case sensitive; options are BookGrid,
+                        BridgeGrid, CliffGrid, MazeGrid, default BookGrid)
+  -w X, --windowSize=X  Request a window width of X pixels *per grid cell*
+                        (default 150)
+  -a A, --agent=A       Agent type (options are 'random', 'value' and 'q',
+                        default random)
+  -t, --text            Use text-only ASCII display
+  -p, --pause           Pause GUI after each time step when running the MDP
+  -q, --quiet           Skip display of any learning episodes
+  -s S, --speed=S       Speed of animation, S > 1.0 is faster, 0.0 < S < 1.0
+                        is slower (default 1.0)
+  -m, --manual          Manually control agent
+  -v, --valueSteps      Display each step of value iteration
+python gridworld.py -g DiscountGrid -a value --discount [YOUR_DISCOUNT] --noise [YOUR_NOISE] --livingReward [YOUR_LIVING_REWARD]
+
+1 Prefer the close exit (+1), risking the cliff (-10)
+python gridworld.py -g DiscountGrid -a value --discount 0.5  --noise 0.2 --livingReward -5
+
+2 Prefer the close exit (+1), but avoiding the cliff (-10)
+python gridworld.py -g DiscountGrid -a value --discount 0.3  --noise 0.2 --livingReward 0
+
+3 Prefer the distant exit (+10), risking the cliff (-10)
+python gridworld.py -g DiscountGrid -a value --discount 0.98 --noise 0.2 --livingReward -2
+
+4 Prefer the distant exit (+10), avoiding the cliff (-10)
+python gridworld.py -g DiscountGrid -a value --discount 0.9 --noise 0.4 --livingReward 0
+
+5 Avoid both exits and the cliff (so an episode should never terminate)
+python gridworld.py -g DiscountGrid -a value  --discount 0.9 --noise 0 --livingReward 11
