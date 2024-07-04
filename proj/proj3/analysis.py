@@ -25,7 +25,7 @@ def question2():
     return answerDiscount, answerNoise
    
 
-def question2a():
+def question3a():
     answerDiscount = 0.5
     answerNoise = 0.2
     answerLivingReward = -5
@@ -33,28 +33,28 @@ def question2a():
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
-def question2b():
+def question3b():
     answerDiscount = 0.3
     answerNoise = 0.2
     answerLivingReward = 0
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
-def question2c():
+def question3c():
     answerDiscount = 0.98
     answerNoise = 0.2
     answerLivingReward = -2
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
-def question2d():
+def question3d():
     answerDiscount = 0.9
     answerNoise = 0.4
     answerLivingReward = 0
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
-def question2e():
+def question3e():
     answerDiscount = 0.9
     answerNoise = 0
     answerLivingReward = 11
